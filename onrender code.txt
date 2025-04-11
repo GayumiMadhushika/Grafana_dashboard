@@ -1,0 +1,123 @@
+htmlNode.innerHTML = `
+  <style>
+    .toggle-container {
+      display: flex;
+      flex-direction: row;
+      gap: 40px;
+      justify-content: center;
+      padding-top: 40px;
+    }
+    .toggle-group {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 60px;
+      height: 34px;
+    }
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #ccc;
+      transition: 0.4s;
+      border-radius: 34px;
+    }
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 26px;
+      width: 26px;
+      left: 4px;
+      bottom: 4px;
+      background-color: white;
+      transition: 0.4s;
+      border-radius: 50%;
+    }
+    input:checked + .slider {
+      background-color: rgb(149, 78, 215);
+    }
+    input:checked + .slider:before {
+      transform: translateX(26px);
+    }
+    .state-text {
+      margin-top: 10px;
+      font-size: 18px;
+      color: white;
+    }
+    .label {
+      color: white;
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+  </style>
+
+  <div class="toggle-container">
+    <div class="toggle-group">
+      <div class="label">wifi</div>
+      <label class="switch">
+        <input type="checkbox" id="toggleOne">
+        <span class="slider"></span>
+      </label>
+      <div id="stateOne" class="state-text">0</div>
+    </div>
+
+    <div class="toggle-group">
+      <div class="label">bluetooth</div>
+      <label class="switch">
+        <input type="checkbox" id="toggleTwo">
+        <span class="slider"></span>
+      </label>
+      <div id="stateTwo" class="state-text">0</div>
+    </div>
+  </div>
+`;
+
+// Utility: update state + publish
+function handleToggle(checkboxId, stateId, topic, storageKey) {
+  const checkbox = htmlNode.querySelector(`#${checkboxId}`);
+  const stateText = htmlNode.querySelector(`#${stateId}`);
+
+  // Restore saved state
+  const saved = localStorage.getItem(storageKey);
+  if (saved === "1") {
+    checkbox.checked = true;
+    stateText.textContent = "1";
+  }
+
+  // On change
+  checkbox.addEventListener("change", () => {
+    const value = checkbox.checked ? "1" : "0";
+    stateText.textContent = value;
+    localStorage.setItem(storageKey, value);
+
+    fetch("http://localhost:1880/publish", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        topic: topic,
+        payload: value
+      })
+    }).then(res => {
+      if (!res.ok) {
+        console.error("MQTT publish failed:", res.statusText);
+      }
+    }).catch(err => console.error("Fetch error:", err));
+  });
+}
+
+// Bind both toggles
+handleToggle("toggleOne", "stateOne", "topic/toggle_one", "toggleStateOne");
+handleToggle("toggleTwo", "stateTwo", "topic/toggle_two", "toggleStateTwo");
+

@@ -1,0 +1,109 @@
+services:
+  influxdb:
+    image: influxdb:1.8
+    container_name: influxdb
+    ports:
+      - "8086:8086"
+    environment:
+      - INFLUXDB_DB=grafana
+      - INFLUXDB_ADMIN_ENABLED=true
+      - INFLUXDB_ADMIN_USER=admin
+      - INFLUXDB_ADMIN_PASSWORD=admin123
+      - INFLUXDB_USER=grafana
+      - INFLUXDB_USER_PASSWORD=grafana123
+    volumes:
+      - influxdb_data:/var/lib/influxdb
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8086/ping"]
+      interval: 10s
+      retries: 5
+      start_period: 10s
+    networks:
+      - monitoring_network
+
+
+  mosquitto:
+    image: eclipse-mosquitto:2.0.15
+    container_name: mosquitto
+    ports:
+      - "1883:1883"
+      - "9001:9001"
+    volumes:
+      - ./mosquitto/config/mosquitto.conf:/mosquitto/config/mosquitto.conf
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "mosquitto_pub", "-h", "localhost", "-t", "test", "-m", "ping"]
+      interval: 10s
+      retries: 5
+      start_period: 10s
+    networks:
+      - monitoring_network
+
+
+
+  grafana:
+    image: grafana/grafana:11.5.2
+    container_name: grafana
+    ports:
+      - "8000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin123
+      - GF_INSTALL_PLUGINS=grafana-mqtt-datasource
+      - GF_INSTALL_PLUGINS=gapit-htmlgraphics-panel
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./grafana-config/grafana.ini:/etc/grafana/grafana.ini
+      - ./grafana-config:/etc/grafana/provisioning
+      - ./provisioning/dashboards:/var/lib/grafana/dashboards
+      - ./provisioning/datasources:/etc/grafana/provisioning/datasources
+      - ./provisioning/dashboards/dashboards.yaml:/etc/grafana/provisioning/dashboards/dashboards.yaml
+    restart: unless-stopped
+    depends_on:
+      influxdb:
+        condition: service_healthy
+      mosquitto:
+        condition: service_healthy
+    networks:
+      - monitoring_network
+      
+
+  sensor_data_generator:
+    image: python:3.9
+    container_name: sensor_data_generator
+    working_dir: /app
+    volumes:
+      - ./random_sensor_data.py:/app/random_sensor_data.py
+    command: sh -c "pip install influxdb && python /app/random_sensor_data.py"
+    depends_on:
+      influxdb:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - monitoring_network
+
+  mqtt_toggle_publisher:
+     build:
+      context: ./mqtt-toggle
+     container_name: mqtt_toggle_publisher
+     ports:
+      - "1880:1880"
+     restart: unless-stopped
+     depends_on:
+      mosquitto:
+        condition: service_healthy
+     networks:
+      - monitoring_network 
+    
+
+networks:
+  monitoring_network:
+    driver: bridge
+
+  
+volumes:
+  grafana_data:
+  influxdb_data:
+  mosquitto_config:
+  #mosquitto_data:
+  #mosquitto_log:

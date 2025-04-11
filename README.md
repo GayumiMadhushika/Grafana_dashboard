@@ -5,12 +5,15 @@
    git clone  https://github.com/GayumiMadhushika/Grafana_dashboard.git
    cd Grafana-setup
    ```
-2. **Run Docker Compose**:
+2. **Check documents**:
+   In grafana_dashboard.py file, line 6, you need to put grafana token in between the "".
+   
+4. **Run Docker Compose**:
 ```sh
- docker-compose up --build -d
+   docker-compose up --build -d
 ```
-3. **Dashboard
+4. **Dashboard**:
    open this port in your browser
 ```sh
- https://localhost:8000
+   https://localhost:8000
 ```

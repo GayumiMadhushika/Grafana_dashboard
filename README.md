@@ -15,5 +15,5 @@
 4. **Dashboard**:
    open this port in your browser
 ```sh
-   https://localhost:8000
+   http://localhost:8000/grafana/
 ```

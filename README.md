@@ -17,3 +17,8 @@
 ```sh
    http://localhost:8000/grafana/
 ```
+5. **To ckeck toggle button MQTT topic**:
+   ``sh
+   docker logs mqtt_toggle_publisher
+   ``
+   

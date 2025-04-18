@@ -29,269 +29,6 @@
       "fieldConfig": {
         "defaults": {
           "color": {
-            "mode": "thresholds"
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 0,
-        "y": 0
-      },
-      "id": 12,
-      "options": {
-        "SVGBaseFix": true,
-        "add100Percentage": true,
-        "calcsMutation": "standard",
-        "centerAlignContent": true,
-        "codeData": "{\n  \"text\": \"Random text\"\n}",
-        "css": "",
-        "dynamicData": false,
-        "dynamicFieldDisplayValues": false,
-        "dynamicHtmlGraphics": false,
-        "dynamicProps": false,
-        "html": "",
-        "onInit": "// Sets the text from customProperties\nconst htmlgraphicsText = htmlNode.getElementById('htmlgraphics-text');\n\nif (htmlgraphicsText) {\n  htmlgraphicsText.textContent = customProperties.text;\n\n  // Change the text color based on the theme\n  if (theme.isDark) {\n    htmlgraphicsText.style.color = 'green';\n  } else {\n    htmlgraphicsText.style.color = 'red';\n  }\n}\n",
-        "onInitOnResize": false,
-        "onRender": "htmlNode.innerHTML = `\n  <style>\n    .toggle-container {\n      display: flex;\n      flex-direction: row;\n      gap: 40px;\n      justify-content: center;\n      padding-top: 40px;\n    }\n    .toggle-group {\n      display: flex;\n      flex-direction: column;\n      align-items: center;\n    }\n    .switch {\n      position: relative;\n      display: inline-block;\n      width: 60px;\n      height: 34px;\n    }\n    .switch input {\n      opacity: 0;\n      width: 0;\n      height: 0;\n    }\n    .slider {\n      position: absolute;\n      cursor: pointer;\n      top: 0;\n      left: 0;\n      right: 0;\n      bottom: 0;\n      background-color: #ccc;\n      transition: 0.4s;\n      border-radius: 34px;\n    }\n    .slider:before {\n      position: absolute;\n      content: \"\";\n      height: 26px;\n      width: 26px;\n      left: 4px;\n      bottom: 4px;\n      background-color: white;\n      transition: 0.4s;\n      border-radius: 50%;\n    }\n    input:checked + .slider {\n      background-color: rgb(149, 78, 215);\n    }\n    input:checked + .slider:before {\n      transform: translateX(26px);\n    }\n    .state-text {\n      margin-top: 10px;\n      font-size: 18px;\n      color: white;\n    }\n    .label {\n      color: white;\n      font-weight: bold;\n      margin-bottom: 5px;\n    }\n  </style>\n\n  <div class=\"toggle-container\">\n    <div class=\"toggle-group\">\n      <div class=\"label\">wifi</div>\n      <label class=\"switch\">\n        <input type=\"checkbox\" id=\"toggleOne\">\n        <span class=\"slider\"></span>\n      </label>\n      <div id=\"stateOne\" class=\"state-text\">0</div>\n    </div>\n\n    <div class=\"toggle-group\">\n      <div class=\"label\">bluetooth</div>\n      <label class=\"switch\">\n        <input type=\"checkbox\" id=\"toggleTwo\">\n        <span class=\"slider\"></span>\n      </label>\n      <div id=\"stateTwo\" class=\"state-text\">0</div>\n    </div>\n  </div>\n`;\n\nfunction handleToggle(checkboxId, stateId, topic, storageKey) {\n  const checkbox = htmlNode.querySelector(`#${checkboxId}`);\n  const stateText = htmlNode.querySelector(`#${stateId}`);\n\n  // Restore saved state\n  const saved = localStorage.getItem(storageKey);\n  if (saved === \"1\") {\n    checkbox.checked = true;\n    stateText.textContent = \"1\";\n  }\n\n  // 1/0 on change\n  checkbox.addEventListener(\"change\", () => {\n    const value = checkbox.checked ? \"1\" : \"0\";\n    stateText.textContent = value;\n    localStorage.setItem(storageKey, value);\n\n//POST request\n    fetch(\"http://172.20.10.3:1880/publish\", {\n      method: \"POST\",\n      headers: { \"Content-Type\": \"application/json\" },\n      body: JSON.stringify({\n        topic: topic,\n        payload: value\n      })\n    }).then(res => {\n      if (!res.ok) {\n        console.error(\"MQTT publish failed:\", res.statusText);\n      }\n    }).catch(err => console.error(\"Fetch error:\", err));\n  });\n}\n\n// Bind both toggles\nhandleToggle(\"toggleOne\", \"stateOne\", \"topic/toggle_one\", \"toggleStateOne\");\nhandleToggle(\"toggleTwo\", \"stateTwo\", \"topic/toggle_two\", \"toggleStateTwo\");\n\n",
-        "overflow": "visible",
-        "panelupdateOnMount": true,
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull",
-            "last",
-            "firstNotNull",
-            "first",
-            "min",
-            "max",
-            "mean",
-            "median",
-            "sum",
-            "count",
-            "range",
-            "delta",
-            "step",
-            "diff",
-            "logmin",
-            "allIsZero",
-            "allIsNull",
-            "diffperc"
-          ]
-        },
-        "renderOnMount": true,
-        "rootCSS": "",
-        "useGrafanaScrollbar": true
-      },
-      "pluginVersion": "2.1.1",
-      "targets": [
-        {
-          "refId": "A"
-        }
-      ],
-      "title": "Panel Title",
-      "type": "gapit-htmlgraphics-panel"
-    },
-    {
-      "datasource": {
-        "type": "grafana-mqtt-datasource",
-        "uid": "PBA9FB8DAC51D59B8"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "fixed"
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 4,
-        "w": 5,
-        "x": 12,
-        "y": 0
-      },
-      "id": 9,
-      "options": {
-        "SVGBaseFix": true,
-        "add100Percentage": true,
-        "calcsMutation": "standard",
-        "centerAlignContent": true,
-        "codeData": "{\n  \"text\": \"Random text\"\n}",
-        "css": "g{\r\n  background-color: rgb(149, 78, 215);\r\n}\r\n",
-        "dynamicData": false,
-        "dynamicFieldDisplayValues": false,
-        "dynamicHtmlGraphics": false,
-        "dynamicProps": false,
-        "html": "",
-        "onInit": "// Sets the text from customProperties\nconst htmlgraphicsText = htmlNode.getElementById('htmlgraphics-text');\n\nif (htmlgraphicsText) {\n  htmlgraphicsText.textContent = customProperties.text;\n\n  // Change the text color based on the theme\n  if (theme.isDark) {\n    htmlgraphicsText.style.color = 'green';\n  } else {\n    htmlgraphicsText.style.color = 'red';\n  }\n}\n",
-        "onInitOnResize": false,
-        "onRender": "htmlNode.innerHTML = `\r\n  <style>\r\n    .toggle-container {\r\n      display: flex;\r\n      flex-direction: column;\r\n      align-items: center;\r\n    }\r\n    .switch {\r\n      position: relative;\r\n      display: inline-block;\r\n      width: 60px;\r\n      height: 34px;\r\n    }\r\n    .switch input {\r\n      opacity: 0;\r\n      width: 0;\r\n      height: 0;\r\n    }\r\n    .slider {\r\n      position: absolute;\r\n      cursor: pointer;\r\n      top: 0;\r\n      left: 0;\r\n      right: 0;\r\n      bottom: 0;\r\n      background-color: #ccc;\r\n      transition: 0.4s;\r\n      border-radius: 34px;\r\n    }\r\n    .slider:before {\r\n      position: absolute;\r\n      content: \"\";\r\n      height: 26px;\r\n      width: 26px;\r\n      left: 4px;\r\n      bottom: 4px;\r\n      background-color: white;\r\n      transition: 0.4s;\r\n      border-radius: 50%;\r\n    }\r\n    input:checked + .slider {\r\n      background-color: rgb(149, 78, 215);\r\n    }\r\n    input:checked + .slider:before {\r\n      transform: translateX(26px);\r\n    }\r\n    .state-text {\r\n      margin-top: 10px;\r\n      font-size: 24px;\r\n      color: white;\r\n    }\r\n  </style>\r\n\r\n  <div class=\"toggle-container\">\r\n    <label class=\"switch\">\r\n      <input type=\"checkbox\" id=\"toggleCheckbox\">\r\n      <span class=\"slider\"></span>\r\n    </label>\r\n    <div id=\"stateValue\" class=\"state-text\">0</div>\r\n  </div>\r\n`;\r\n\r\nconst checkbox = htmlNode.querySelector(\"#toggleCheckbox\");\r\nconst stateText = htmlNode.querySelector(\"#stateValue\");\r\n\r\n// previous state\r\nconst savedState = localStorage.getItem(\"myToggleState\");\r\nif (savedState === \"1\") {\r\n  checkbox.checked = true;\r\n  stateText.textContent = \"1\";\r\n} else {\r\n  checkbox.checked = false;\r\n  stateText.textContent = \"0\";\r\n}\r\n\r\ncheckbox.addEventListener(\"change\", () => {\r\n  const value = checkbox.checked ? \"1\" : \"0\";\r\n  stateText.textContent = value;\r\n  localStorage.setItem(\"myToggleState\", value);\r\n\r\n  // Publish to Node-RED\r\n  fetch(\"http://localhost:1880/publish\", {\r\n    method: \"POST\",\r\n    headers: { \"Content-Type\": \"application/json\" },\r\n    body: JSON.stringify({\r\n      topic: \"topic/toggle_state\",\r\n      payload: value\r\n    })\r\n  })\r\n  .then(res => {\r\n    if (!res.ok) {\r\n      console.error(\"MQTT publish failed:\", res.statusText);\r\n    }\r\n  })\r\n  .catch(err => console.error(\"Fetch error:\", err));\r\n});\r\n",
-        "overflow": "visible",
-        "panelupdateOnMount": true,
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull",
-            "last",
-            "firstNotNull",
-            "first",
-            "min",
-            "max",
-            "mean",
-            "median",
-            "sum",
-            "count",
-            "range",
-            "delta",
-            "step",
-            "diff",
-            "logmin",
-            "allIsZero",
-            "allIsNull",
-            "diffperc"
-          ]
-        },
-        "renderOnMount": true,
-        "rootCSS": "",
-        "useGrafanaScrollbar": false
-      },
-      "pluginVersion": "2.1.1",
-      "targets": [
-        {
-          "datasource": {
-            "type": "grafana-mqtt-datasource",
-            "uid": "PBA9FB8DAC51D59B8"
-          },
-          "refId": "A"
-        }
-      ],
-      "title": "WI-FI",
-      "transparent": true,
-      "type": "gapit-htmlgraphics-panel"
-    },
-    {
-      "datasource": {
-        "type": "influxdb",
-        "uid": "P951FEA4DE68E13C5"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 4,
-        "w": 4,
-        "x": 12,
-        "y": 4
-      },
-      "id": 11,
-      "options": {
-        "SVGBaseFix": true,
-        "add100Percentage": true,
-        "calcsMutation": "standard",
-        "centerAlignContent": true,
-        "codeData": "{\n  \"text\": \"Random text\"\n}",
-        "css": "\n",
-        "dynamicData": false,
-        "dynamicFieldDisplayValues": false,
-        "dynamicHtmlGraphics": false,
-        "dynamicProps": false,
-        "html": "",
-        "onInit": "",
-        "onInitOnResize": false,
-        "onRender": "htmlNode.innerHTML = `\n  <style>\n    .toggle-container {\n      display: flex;\n      flex-direction: row;\n      gap: 40px;\n      justify-content: center;\n      padding-top: 40px;\n    }\n    .toggle-group {\n      display: flex;\n      flex-direction: column;\n      align-items: center;\n    }\n    .switch {\n      position: relative;\n      display: inline-block;\n      width: 60px;\n      height: 34px;\n    }\n    .switch input {\n      opacity: 0;\n      width: 0;\n      height: 0;\n    }\n    .slider {\n      position: absolute;\n      cursor: pointer;\n      top: 0;\n      left: 0;\n      right: 0;\n      bottom: 0;\n      background-color: #ccc;\n      transition: 0.4s;\n      border-radius: 34px;\n    }\n    .slider:before {\n      position: absolute;\n      content: \"\";\n      height: 26px;\n      width: 26px;\n      left: 4px;\n      bottom: 4px;\n      background-color: white;\n      transition: 0.4s;\n      border-radius: 50%;\n    }\n    input:checked + .slider {\n      background-color: rgb(149, 78, 215);\n    }\n    input:checked + .slider:before {\n      transform: translateX(26px);\n    }\n    .state-text {\n      margin-top: 10px;\n      font-size: 18px;\n      color: white;\n    }\n    .label {\n      color: white;\n      font-weight: bold;\n      margin-bottom: 5px;\n    }\n  </style>\n\n  <div class=\"toggle-container\">\n    <div class=\"toggle-group\">\n      <div class=\"label\">wifi</div>\n      <label class=\"switch\">\n        <input type=\"checkbox\" id=\"button1\">\n        <span class=\"slider\"></span>\n      </label>\n      <div id=\"stateOne\" class=\"state-text\">0</div>\n    </div>\n\n    <div class=\"toggle-group\">\n      <div class=\"label\">bluetooth</div>\n      <label class=\"switch\">\n        <input type=\"checkbox\" id=\"button2\">\n        <span class=\"slider\"></span>\n      </label>\n      <div id=\"stateTwo\" class=\"state-text\">0</div>\n    </div>\n  </div>\n`;\n\nfunction handleToggle(checkboxId, stateId, topic, storageKey) {\n  const checkbox = htmlNode.querySelector(`#${checkboxId}`);\n  const stateText = htmlNode.querySelector(`#${stateId}`);\n\n  const saved = localStorage.getItem(storageKey);\n  if (saved === \"1\") {\n    checkbox.checked = true;\n    stateText.textContent = \"1\";\n  }\n\n  checkbox.addEventListener(\"change\", () => {\n    const value = checkbox.checked ? \"1\" : \"0\";\n    stateText.textContent = value;\n    localStorage.setItem(storageKey, value);\n\n    fetch(\"http://localhost:1880/publish\", {\n      method: \"POST\",\n      headers: { \"Content-Type\": \"application/json\" },\n      body: JSON.stringify({\n        topic: topic,\n        payload: value\n      })\n    }).then(res => {\n      if (!res.ok) {\n        console.error(\"MQTT publish failed:\", res.statusText);\n      }\n    }).catch(err => console.error(\"Fetch error:\", err));\n  });\n}\n\nhandleToggle(\"button1\", \"stateOne\", \"topic/button3\", \"toggleStateOne\");\nhandleToggle(\"button2\", \"stateTwo\", \"topic/button3\", \"toggleStateTwo\");\n\n",
-        "overflow": "visible",
-        "panelupdateOnMount": true,
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull",
-            "last",
-            "firstNotNull",
-            "first",
-            "min",
-            "max",
-            "mean",
-            "median",
-            "sum",
-            "count",
-            "range",
-            "delta",
-            "step",
-            "diff",
-            "logmin",
-            "allIsZero",
-            "allIsNull",
-            "diffperc"
-          ]
-        },
-        "renderOnMount": true,
-        "rootCSS": "",
-        "useGrafanaScrollbar": true
-      },
-      "pluginVersion": "2.1.1",
-      "targets": [
-        {
-          "refId": "A"
-        }
-      ],
-      "title": "Panel Title",
-      "type": "gapit-htmlgraphics-panel"
-    },
-    {
-      "datasource": {
-        "type": "influxdb",
-        "uid": "P951FEA4DE68E13C5"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
             "mode": "continuous-BlPu"
           },
           "decimals": 1,
@@ -363,10 +100,10 @@
         ]
       },
       "gridPos": {
-        "h": 8,
+        "h": 6,
         "w": 6,
         "x": 0,
-        "y": 8
+        "y": 0
       },
       "id": 1,
       "options": {
@@ -414,6 +151,7 @@
         }
       ],
       "title": "Device 1",
+      "transparent": true,
       "type": "stat"
     },
     {
@@ -495,10 +233,10 @@
         ]
       },
       "gridPos": {
-        "h": 8,
+        "h": 6,
         "w": 6,
-        "x": 6,
-        "y": 8
+        "x": 9,
+        "y": 0
       },
       "id": 2,
       "options": {
@@ -546,6 +284,7 @@
         }
       ],
       "title": "Device 2",
+      "transparent": true,
       "type": "stat"
     },
     {
@@ -627,10 +366,10 @@
         ]
       },
       "gridPos": {
-        "h": 8,
+        "h": 6,
         "w": 6,
-        "x": 12,
-        "y": 8
+        "x": 17,
+        "y": 0
       },
       "id": 3,
       "options": {
@@ -678,7 +417,278 @@
         }
       ],
       "title": "Device 3",
+      "transparent": true,
       "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "P951FEA4DE68E13C5"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 6,
+        "x": 0,
+        "y": 6
+      },
+      "id": 12,
+      "options": {
+        "SVGBaseFix": true,
+        "add100Percentage": true,
+        "calcsMutation": "standard",
+        "centerAlignContent": true,
+        "codeData": "{\n  \"text\": \"Random text\"\n}",
+        "css": "",
+        "dynamicData": false,
+        "dynamicFieldDisplayValues": false,
+        "dynamicHtmlGraphics": false,
+        "dynamicProps": false,
+        "html": "",
+        "onInit": "// Sets the text from customProperties\nconst htmlgraphicsText = htmlNode.getElementById('htmlgraphics-text');\n\nif (htmlgraphicsText) {\n  htmlgraphicsText.textContent = customProperties.text;\n\n  // Change the text color based on the theme\n  if (theme.isDark) {\n    htmlgraphicsText.style.color = 'green';\n  } else {\n    htmlgraphicsText.style.color = 'red';\n  }\n}\n",
+        "onInitOnResize": false,
+        "onRender": "htmlNode.innerHTML = `\n  <style>\n    .toggle-container {\n      display: flex;\n      flex-direction: row;\n      gap: 40px;\n      justify-content: center;\n      padding-top: 40px;\n    }\n    .toggle-group {\n      display: flex;\n      flex-direction: column;\n      align-items: center;\n    }\n    .switch {\n      position: relative;\n      display: inline-block;\n      width: 60px;\n      height: 34px;\n    }\n    .switch input {\n      opacity: 0;\n      width: 0;\n      height: 0;\n    }\n    .slider {\n      position: absolute;\n      cursor: pointer;\n      top: 0;\n      left: 0;\n      right: 0;\n      bottom: 0;\n      background-color: #ccc;\n      transition: 0.4s;\n      border-radius: 34px;\n    }\n    .slider:before {\n      position: absolute;\n      content: \"\";\n      height: 26px;\n      width: 26px;\n      left: 4px;\n      bottom: 4px;\n      background-color: white;\n      transition: 0.4s;\n      border-radius: 50%;\n    }\n    input:checked + .slider {\n      background-color: rgb(149, 78, 215);\n    }\n    input:checked + .slider:before {\n      transform: translateX(26px);\n    }\n    .state-text {\n      margin-top: 10px;\n      font-size: 18px;\n      color: white;\n    }\n    .label {\n      color: white;\n      font-weight: bold;\n      margin-bottom: 5px;\n    }\n  </style>\n\n  <div class=\"toggle-container\">\n    <div class=\"toggle-group\">\n      <div class=\"label\">wifi</div>\n      <label class=\"switch\">\n        <input type=\"checkbox\" id=\"toggleOne\">\n        <span class=\"slider\"></span>\n      </label>\n      <div id=\"stateOne\" class=\"state-text\">0</div>\n    </div>\n\n    <div class=\"toggle-group\">\n      <div class=\"label\">bluetooth</div>\n      <label class=\"switch\">\n        <input type=\"checkbox\" id=\"toggleTwo\">\n        <span class=\"slider\"></span>\n      </label>\n      <div id=\"stateTwo\" class=\"state-text\">0</div>\n    </div>\n  </div>\n`;\n\nfunction handleToggle(checkboxId, stateId, topic, storageKey) {\n  const checkbox = htmlNode.querySelector(`#${checkboxId}`);\n  const stateText = htmlNode.querySelector(`#${stateId}`);\n\n  // Restore saved state\n  const saved = localStorage.getItem(storageKey);\n  if (saved === \"1\") {\n    checkbox.checked = true;\n    stateText.textContent = \"1\";\n  }\n\n  // 1/0 on change\n  checkbox.addEventListener(\"change\", () => {\n    const value = checkbox.checked ? \"1\" : \"0\";\n    stateText.textContent = value;\n    localStorage.setItem(storageKey, value);\n\n//POST request\n    fetch(\"http://172.20.10.3:1880/publish\", {\n      method: \"POST\",\n      headers: { \"Content-Type\": \"application/json\" },\n      body: JSON.stringify({\n        topic: topic,\n        payload: value\n      })\n    }).then(res => {\n      if (!res.ok) {\n        console.error(\"MQTT publish failed:\", res.statusText);\n      }\n    }).catch(err => console.error(\"Fetch error:\", err));\n  });\n}\n\n// Bind both toggles\nhandleToggle(\"toggleOne\", \"stateOne\", \"topic/toggle_one\", \"toggleStateOne\");\nhandleToggle(\"toggleTwo\", \"stateTwo\", \"topic/toggle_two\", \"toggleStateTwo\");\n\n",
+        "overflow": "visible",
+        "panelupdateOnMount": true,
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull",
+            "last",
+            "firstNotNull",
+            "first",
+            "min",
+            "max",
+            "mean",
+            "median",
+            "sum",
+            "count",
+            "range",
+            "delta",
+            "step",
+            "diff",
+            "logmin",
+            "allIsZero",
+            "allIsNull",
+            "diffperc"
+          ]
+        },
+        "renderOnMount": true,
+        "rootCSS": "",
+        "useGrafanaScrollbar": false
+      },
+      "pluginVersion": "2.1.1",
+      "targets": [
+        {
+          "refId": "A"
+        }
+      ],
+      "title": "with express",
+      "transparent": true,
+      "type": "gapit-htmlgraphics-panel"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "P951FEA4DE68E13C5"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 6,
+        "x": 6,
+        "y": 6
+      },
+      "id": 10,
+      "options": {
+        "SVGBaseFix": true,
+        "add100Percentage": true,
+        "calcsMutation": "standard",
+        "centerAlignContent": true,
+        "codeData": "{\n  \"text\": \"Random text\"\n}",
+        "css": "",
+        "dynamicData": false,
+        "dynamicFieldDisplayValues": false,
+        "dynamicHtmlGraphics": false,
+        "dynamicProps": false,
+        "html": "",
+        "onInit": "",
+        "onInitOnResize": false,
+        "onRender": "// Load mqtt.js from CDN dynamically\nconst loadMQTT = () => {\n  return new Promise((resolve, reject) => { //wait until the MQTT library is loaded\n    if (window.mqtt) return resolve(window.mqtt); //if library is already loaded in the browser, just return it\n\n    const script = document.createElement('script');\n    script.src = 'https://unpkg.com/mqtt/dist/mqtt.min.js'; //load MQTT client library\n    script.onload = () => resolve(window.mqtt);      // once loaded successfully, the promise resolve\n    script.onerror = reject;\n    document.head.appendChild(script);  // the script is inserted into the <head> of the page\n  });\n};\n\nhtmlNode.innerHTML = `\n  <style>\n    .toggle-container {\n      display: flex;\n      flex-direction: row;\n      gap: 40px;\n      justify-content: center;\n      padding-top: 40px;\n    }\n    .toggle-group {\n      display: flex;\n      flex-direction: column;\n      align-items: center;\n    }\n    .switch {\n      position: relative;\n      display: inline-block;\n      width: 60px;\n      height: 34px;\n    }\n    .switch input {\n      opacity: 0;\n      width: 0;\n      height: 0;\n    }\n    .slider {\n      position: absolute;\n      cursor: pointer;\n      top: 0;\n      left: 0;\n      right: 0;\n      bottom: 0;\n      background-color: #ccc;\n      transition: 0.4s;\n      border-radius: 34px;\n    }\n    .slider:before {\n      position: absolute;\n      content: \"\";\n      height: 26px;\n      width: 26px;\n      left: 4px;\n      bottom: 4px;\n      background-color: white;\n      transition: 0.4s;\n      border-radius: 50%;\n    }\n    input:checked + .slider {\n      background-color: rgb(149, 78, 215);\n    }\n    input:checked + .slider:before {\n      transform: translateX(26px);\n    }\n    .state-text {\n      margin-top: 10px;\n      font-size: 18px;\n      color: white;\n    }\n    .label {\n      color: white;\n      font-weight: bold;\n      margin-bottom: 5px;\n    }\n  </style>\n\n  <div class=\"toggle-container\">\n    <div class=\"toggle-group\">\n      <div class=\"label\">wifi</div>\n      <label class=\"switch\">\n        <input type=\"checkbox\" id=\"ONE\">\n        <span class=\"slider\"></span>\n      </label>\n      <div id=\"stateOne\" class=\"state-text\">0</div>\n    </div>\n\n    <div class=\"toggle-group\">\n      <div class=\"label\">bluetooth</div>\n      <label class=\"switch\">\n        <input type=\"checkbox\" id=\"TWO\">\n        <span class=\"slider\"></span>\n      </label>\n      <div id=\"stateTwo\" class=\"state-text\">0</div>\n    </div>\n  </div>\n`;\n\n// Once mqtt.js is loaded, connect it into MQTT broker\nloadMQTT().then(() => {\n  const client = mqtt.connect('ws://172.20.10.3:9001', {\n    clientId: 'grafana-toggle-' + Math.random().toString(16).substr(2, 8),\n    clean: true\n  });\n\n  client.on('connect', () => {\n    console.log(' MQTT connected');\n  });\n\n  client.on('error', (err) => {\n    console.error(' MQTT connection error:', err);\n  });\n\n  function handleToggle(checkboxId, stateId, topic, storageKey) {\n    const checkbox = htmlNode.querySelector(`#${checkboxId}`);\n    const stateText = htmlNode.querySelector(`#${stateId}`);\n\n    // Load previous state\n    const saved = localStorage.getItem(storageKey);\n    if (saved === \"1\") {\n      checkbox.checked = true;\n      stateText.textContent = \"1\";\n    }\n\n    checkbox.addEventListener(\"change\", () => {\n      const value = checkbox.checked ? \"1\" : \"0\";\n      stateText.textContent = value;\n      localStorage.setItem(storageKey, value);\n\n      client.publish(topic, value, { qos: 2, retain: true }, (err) => {\n        if (err) {\n          console.error(` Publish to ${topic} failed`, err);\n        } else {\n          console.log(` Published ${value} to ${topic}`);\n        }\n      });\n    });\n  }\n\n  // Bind both toggles\n  handleToggle(\"ONE\", \"stateOne\", \"ButtonPanel2/ONE\", \"toggleStateOne\");\n  handleToggle(\"TWO\", \"stateTwo\", \"ButtonPanel2/TWO\", \"toggleStateTwo\");\n});\n\n",
+        "overflow": "visible",
+        "panelupdateOnMount": true,
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull",
+            "last",
+            "firstNotNull",
+            "first",
+            "min",
+            "max",
+            "mean",
+            "median",
+            "sum",
+            "count",
+            "range",
+            "delta",
+            "step",
+            "diff",
+            "logmin",
+            "allIsZero",
+            "allIsNull",
+            "diffperc"
+          ]
+        },
+        "renderOnMount": true,
+        "rootCSS": "",
+        "useGrafanaScrollbar": false
+      },
+      "pluginVersion": "2.1.1",
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-mqtt-datasource",
+            "uid": "PBA9FB8DAC51D59B8"
+          },
+          "refId": "A",
+          "topic": "test/topic"
+        }
+      ],
+      "title": "with web socket",
+      "transparent": true,
+      "type": "gapit-htmlgraphics-panel"
+    },
+    {
+      "datasource": {
+        "type": "grafana-mqtt-datasource",
+        "uid": "PBA9FB8DAC51D59B8"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "fixed"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 7,
+        "x": 12,
+        "y": 6
+      },
+      "id": 9,
+      "options": {
+        "SVGBaseFix": true,
+        "add100Percentage": true,
+        "calcsMutation": "standard",
+        "centerAlignContent": true,
+        "codeData": "{\n  \"text\": \"Random text\"\n}",
+        "css": "g{\r\n  background-color: rgb(149, 78, 215);\r\n}\r\n",
+        "dynamicData": false,
+        "dynamicFieldDisplayValues": false,
+        "dynamicHtmlGraphics": false,
+        "dynamicProps": false,
+        "html": "",
+        "onInit": "// Sets the text from customProperties\nconst htmlgraphicsText = htmlNode.getElementById('htmlgraphics-text');\n\nif (htmlgraphicsText) {\n  htmlgraphicsText.textContent = customProperties.text;\n\n  // Change the text color based on the theme\n  if (theme.isDark) {\n    htmlgraphicsText.style.color = 'green';\n  } else {\n    htmlgraphicsText.style.color = 'red';\n  }\n}\n",
+        "onInitOnResize": false,
+        "onRender": "htmlNode.innerHTML = `\r\n  <style>\r\n    .toggle-container {\r\n      display: flex;\r\n      flex-direction: column;\r\n      align-items: center;\r\n    }\r\n    .switch {\r\n      position: relative;\r\n      display: inline-block;\r\n      width: 60px;\r\n      height: 34px;\r\n    }\r\n    .switch input {\r\n      opacity: 0;\r\n      width: 0;\r\n      height: 0;\r\n    }\r\n    .slider {\r\n      position: absolute;\r\n      cursor: pointer;\r\n      top: 0;\r\n      left: 0;\r\n      right: 0;\r\n      bottom: 0;\r\n      background-color: #ccc;\r\n      transition: 0.4s;\r\n      border-radius: 34px;\r\n    }\r\n    .slider:before {\r\n      position: absolute;\r\n      content: \"\";\r\n      height: 26px;\r\n      width: 26px;\r\n      left: 4px;\r\n      bottom: 4px;\r\n      background-color: white;\r\n      transition: 0.4s;\r\n      border-radius: 50%;\r\n    }\r\n    input:checked + .slider {\r\n      background-color: rgb(149, 78, 215);\r\n    }\r\n    input:checked + .slider:before {\r\n      transform: translateX(26px);\r\n    }\r\n    .state-text {\r\n      margin-top: 10px;\r\n      font-size: 24px;\r\n      color: white;\r\n    }\r\n  </style>\r\n\r\n  <div class=\"toggle-container\">\r\n    <label class=\"switch\">\r\n      <input type=\"checkbox\" id=\"toggleCheckbox\">\r\n      <span class=\"slider\"></span>\r\n    </label>\r\n    <div id=\"stateValue\" class=\"state-text\">0</div>\r\n  </div>\r\n`;\r\n\r\nconst checkbox = htmlNode.querySelector(\"#toggleCheckbox\");\r\nconst stateText = htmlNode.querySelector(\"#stateValue\");\r\n\r\n// previous state\r\nconst savedState = localStorage.getItem(\"myToggleState\");\r\nif (savedState === \"1\") {\r\n  checkbox.checked = true;\r\n  stateText.textContent = \"1\";\r\n} else {\r\n  checkbox.checked = false;\r\n  stateText.textContent = \"0\";\r\n}\r\n\r\ncheckbox.addEventListener(\"change\", () => {\r\n  const value = checkbox.checked ? \"1\" : \"0\";\r\n  stateText.textContent = value;\r\n  localStorage.setItem(\"myToggleState\", value);\r\n\r\n  // Publish to Node-RED\r\n  fetch(\"http://localhost:1880/publish\", {\r\n    method: \"POST\",\r\n    headers: { \"Content-Type\": \"application/json\" },\r\n    body: JSON.stringify({\r\n      topic: \"topic/toggle_state\",\r\n      payload: value\r\n    })\r\n  })\r\n  .then(res => {\r\n    if (!res.ok) {\r\n      console.error(\"MQTT publish failed:\", res.statusText);\r\n    }\r\n  })\r\n  .catch(err => console.error(\"Fetch error:\", err));\r\n});\r\n",
+        "overflow": "visible",
+        "panelupdateOnMount": true,
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull",
+            "last",
+            "firstNotNull",
+            "first",
+            "min",
+            "max",
+            "mean",
+            "median",
+            "sum",
+            "count",
+            "range",
+            "delta",
+            "step",
+            "diff",
+            "logmin",
+            "allIsZero",
+            "allIsNull",
+            "diffperc"
+          ]
+        },
+        "renderOnMount": true,
+        "rootCSS": "",
+        "useGrafanaScrollbar": false
+      },
+      "pluginVersion": "2.1.1",
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-mqtt-datasource",
+            "uid": "PBA9FB8DAC51D59B8"
+          },
+          "refId": "A"
+        }
+      ],
+      "title": "WI-FI",
+      "transparent": true,
+      "type": "gapit-htmlgraphics-panel"
     },
     {
       "datasource": {
@@ -778,17 +788,17 @@
         ]
       },
       "gridPos": {
-        "h": 8,
+        "h": 7,
         "w": 12,
         "x": 0,
-        "y": 16
+        "y": 13
       },
       "id": 4,
       "options": {
         "legend": {
           "calcs": [],
           "displayMode": "list",
-          "placement": "bottom",
+          "placement": "right",
           "showLegend": true
         },
         "tooltip": {
@@ -929,17 +939,17 @@
         ]
       },
       "gridPos": {
-        "h": 8,
+        "h": 7,
         "w": 12,
         "x": 12,
-        "y": 16
+        "y": 13
       },
       "id": 5,
       "options": {
         "legend": {
           "calcs": [],
           "displayMode": "list",
-          "placement": "bottom",
+          "placement": "right",
           "showLegend": true
         },
         "tooltip": {
@@ -1034,7 +1044,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               },
               {
                 "color": "red",
@@ -1083,17 +1094,17 @@
         ]
       },
       "gridPos": {
-        "h": 8,
+        "h": 7,
         "w": 12,
         "x": 0,
-        "y": 24
+        "y": 20
       },
       "id": 6,
       "options": {
         "legend": {
           "calcs": [],
           "displayMode": "list",
-          "placement": "bottom",
+          "placement": "right",
           "showLegend": true
         },
         "tooltip": {
@@ -1188,7 +1199,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               },
               {
                 "color": "red",
@@ -1237,17 +1249,17 @@
         ]
       },
       "gridPos": {
-        "h": 8,
+        "h": 7,
         "w": 12,
         "x": 12,
-        "y": 24
+        "y": 20
       },
       "id": 7,
       "options": {
         "legend": {
           "calcs": [],
           "displayMode": "list",
-          "placement": "bottom",
+          "placement": "right",
           "showLegend": true
         },
         "tooltip": {
@@ -1295,95 +1307,38 @@
       "type": "timeseries"
     },
     {
-      "datasource": {
-        "type": "grafana-mqtt-datasource",
-        "uid": "PBA9FB8DAC51D59B8"
-      },
       "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green"
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          }
-        },
+        "defaults": {},
         "overrides": []
       },
       "gridPos": {
-        "h": 3,
-        "w": 3,
+        "h": 8,
+        "w": 12,
         "x": 0,
-        "y": 32
+        "y": 27
       },
-      "id": 10,
+      "id": 13,
       "options": {
-        "SVGBaseFix": true,
-        "add100Percentage": true,
-        "calcsMutation": "standard",
-        "centerAlignContent": true,
-        "codeData": "{\n  \"text\": \"Random text\"\n}",
-        "css": "* {\n  font-family: Open Sans;\n}\n\n.box {\n  border: solid #555 2px;\n  border-radius: 10px;\n  padding: 10px 20px;\n}\n.container{\n  height:100vh;\n  width: 100%;\n  display:flex;\n  align-items:center;\n  justify-content:center;\n}\n.button{\n  background-color: rgb(204, 193, 193);\n  width: 100px;\n  height:50px;\n  border-radius: 100px;\n  cursor:pointer;\n  position:relative;\n  transition: 0.2s;\n  align-items: center;\n  justify-content:center;\n}\n.button::before{\n  position: absolute;\n  content: '';\n  background-color:#fff;\n  width:45px;\n  height:45px;\n  border-radius: 100px;\n  margin:2.5px;\n  transition:0.2s;\n}\ninput:checked+.button{\n  background-color: rgb(19, 15, 71);\n}\n\ninput:checked+.button::before{\n  transform: translateX(50px);\n}\n\ninput{\n  display:none;\n}\n\nsvg{\n  width: 30px;\n  color: black;\n  position: absolute;\n}\n\nh3{\n  padding-left: 15px;\n}\n\n.off{\ncolor: black;\n}",
-        "dynamicData": false,
-        "dynamicFieldDisplayValues": false,
-        "dynamicHtmlGraphics": false,
-        "dynamicProps": false,
-        "html": "\n<div class=\"container\">\n   <input type=\"checkbox\" id=\"check\">\n   <label for= \"check\"class=\"button\">\n          <h3>ON</h3>\n</div>\n\n",
-        "onInit": "",
-        "onInitOnResize": false,
-        "onRender": "// Sets the value from the first series on every refresh\nconst htmlgraphicsValue = htmlNode.getElementById('htmlgraphics-value');\n\nif (htmlgraphicsValue) {\n  const valueField = data.series[0]?.fields[1];\n  if (valueField) {\n    const length = valueField.values.length;\n    htmlgraphicsValue.textContent = valueField.values.get(length - 1);\n  } else {\n    htmlgraphicsValue.textContent = \"No data\"\n  }\n}\n",
-        "overflow": "visible",
-        "panelupdateOnMount": true,
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull",
-            "last",
-            "firstNotNull",
-            "first",
-            "min",
-            "max",
-            "mean",
-            "median",
-            "sum",
-            "count",
-            "range",
-            "delta",
-            "step",
-            "diff",
-            "logmin",
-            "allIsZero",
-            "allIsNull",
-            "diffperc"
-          ]
+        "alertInstanceLabelFilter": "",
+        "alertName": "",
+        "dashboardAlerts": true,
+        "groupBy": [],
+        "groupMode": "default",
+        "maxItems": 20,
+        "showInactiveAlerts": false,
+        "sortOrder": 1,
+        "stateFilter": {
+          "error": true,
+          "firing": true,
+          "noData": false,
+          "normal": true,
+          "pending": true
         },
-        "renderOnMount": true,
-        "rootCSS": "",
-        "useGrafanaScrollbar": true
+        "viewMode": "list"
       },
-      "pluginVersion": "2.1.1",
-      "targets": [
-        {
-          "datasource": {
-            "type": "grafana-mqtt-datasource",
-            "uid": "PBA9FB8DAC51D59B8"
-          },
-          "refId": "A",
-          "topic": "test/topic"
-        }
-      ],
-      "title": "Bluetooth",
-      "transparent": true,
-      "type": "gapit-htmlgraphics-panel"
+      "pluginVersion": "11.5.2",
+      "title": "ALERTS",
+      "type": "alertlist"
     }
   ],
   "preload": false,
@@ -1401,6 +1356,6 @@
   "timezone": "browser",
   "title": "Automated Sensor Dashboard - DSI",
   "uid": "sensor-dashboard",
-  "version": 3,
+  "version": 9,
   "weekStart": ""
 }
